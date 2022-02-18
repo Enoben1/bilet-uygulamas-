@@ -1,3 +1,4 @@
+import 'package:biletuyg/person.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -34,18 +35,57 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   int secilisayfa = 0;
+  int para = 600;
   bool hover1 = false;
   bool hover2 = false;
   bool hover3 = false;
+
+  List<int> ucakalinanbilet = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  List<int> otobusalinanbilet = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  List<int> alinanucakbilet = [];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: Icon(Icons.email),
-        title: Center(
-          child: Text("Sinav2 Uygulaması"),
-        )
+        title: Row(
+          children: [
+            Expanded(
+              flex: 1,
+              child: IconButton(icon: Icon(Icons.mail), onPressed: () {
+                /*Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Sonuc()),
+              );*/
+              },),
+            ),
+            Expanded(
+              flex: 1,
+              child: IconButton(icon: Icon(Icons.person), onPressed: () {
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => person(alinanucakbilet, otobusalinanbilet)),
+              );
+              },),
+            ),
+            Expanded(
+              flex: 6,
+              child: Center(
+                child: Text("Bilet Al"),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          Row(
+            children: [
+              Text(para.toString()),
+              Icon(
+                Icons.payments_outlined,
+              ),
+            ],
+          ),
+        ],
       ),
       body: Stack(
         children: [
@@ -70,30 +110,83 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemBuilder: (BuildContext ctx, index) {
                     return ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        primary: Colors.white,
+                        primary: ucakalinanbilet[index]==1?Colors.green:Colors.white,
                         onPrimary: Colors.grey,
                       ),
                       onPressed: (){
                         showDialog(context: context, builder: (BuildContext context) => Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            AlertDialog(
-                              title: Text("Uçak Bileti"),
-                              content: Text((index + 1).toString() + " nolu firma için bilet almak istermisiniz?"),
-                              actions: [
-                                Row(
+                            Visibility(
+                              visible: ucakalinanbilet[index]==1?false:true,
+                              child: AlertDialog(
+                                title: Text("Uçak Bileti"),
+                                content: SizedBox(
+                                  height: 50,
+                                  child: Column(
+                                    children: [
+                                      Text((index + 1).toString() + " nolu firma için bilet almak istermisiniz?"),
+                                      SizedBox(height: 10,),
+                                      Text("250TL", style: TextStyle(color: Colors.green),),
+                                    ],
+                                  ),
+                                ),
+                                actions: [
+                                  Row(
                                   mainAxisAlignment: MainAxisAlignment.end ,
                                   children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("İptal")),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("Satın al")),
-                                  )
-                                ],),
-                              ],
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("İptal")),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(onPressed: (){
+                                      setState(() {
+                                        if(para >= 250){
+                                          ucakalinanbilet[index] = 1;
+                                          para = para - 250;
+
+                                          alinanucakbilet.add(index);
+
+                                          Navigator.pop(context);
+                                        }
+                                      });
+                                      },
+                                          child: Text("Satın al")),
+                                    )
+                                  ],),
+
+                                ],
+                              ),
+                            ),
+                            Visibility(
+                              visible: ucakalinanbilet[index]==0?false:true,
+                              child: AlertDialog(
+                                title: Text("Biletiniz"),
+                                content: Text((index + 1).toString() + " nolu firma için almış olduğunuz bilet."),
+                                actions: [
+                                  Row(
+                                  mainAxisAlignment: MainAxisAlignment.end ,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("Geri Dön")),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: ElevatedButton(onPressed: (){ Navigator.pop(context);
+                                      setState(() {
+                                        ucakalinanbilet[index] = 0;
+                                        para = para + 250;
+                                      });
+                                      },
+                                          child: Text("İade Et")),
+                                    )
+                                  ],),
+
+                                ],
+                              ),
                             ),
                           ],
                         ));
@@ -121,29 +214,63 @@ class _MyHomePageState extends State<MyHomePage> {
                     showDialog(context: context, builder: (BuildContext context) => Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        AlertDialog(
-                          title: Text("Otobüs Bileti"),
-                          content: Text((index + 1).toString() + " nolu firma için bilet almak istermisiniz?"),
-                          actions: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end ,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("İptal")),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("Satın al")),
-                                )
-                              ],),
-                          ],
+                        Visibility(
+                          visible: otobusalinanbilet[index]==1?false:true,
+                          child: AlertDialog(
+                            title: Text("Otobüs Bileti"),
+                            content: Text((index + 1).toString() + " nolu firma için bilet almak istermisiniz?"),
+                            actions: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end ,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("İptal")),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context);
+                                    setState(() {
+                                      otobusalinanbilet[index] = 1;
+                                    });
+                                    },
+                                        child: Text("Satın al")),
+                                  )
+                                ],),
+                            ],
+                          ),
+                        ),
+                        Visibility(
+                          visible: otobusalinanbilet[index]==0?false:true,
+                          child: AlertDialog(
+                            title: Text("Biletiniz"),
+                            content: Text((index + 1).toString() + " nolu firma için almış olduğunuz bilet."),
+                            actions: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.end ,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context); }, child: Text("Geri Dön")),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: ElevatedButton(onPressed: (){ Navigator.pop(context);
+                                    setState(() {
+                                      otobusalinanbilet[index] = 0;
+                                    });
+                                    },
+                                        child: Text("İade Et")),
+                                  )
+                                ],),
+                            ],
+                          ),
                         ),
                       ],
                     ));
                   },
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.white,
+                    primary: otobusalinanbilet[index]==1?Colors.green:Colors.white,
                     onPrimary: Colors.grey,
                   ),
                   child: Row(
@@ -153,7 +280,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                         Text((index + 1).toString() + " nolu firma", style: TextStyle(fontSize: 16, color: Colors.black),),
-                        Text("Uçar gider. Sizi sevdiklerinize götürür.", style: TextStyle(color: Colors.grey, fontSize: 14),)
+                        Text("Uçar gider. Sizi sevdiklerinize götürür.", style: TextStyle(color: Colors.blueGrey, fontSize: 14),)
                       ],)
                     ],
                   ),
